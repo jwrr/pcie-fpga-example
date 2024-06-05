@@ -35,11 +35,12 @@ make: *** [Makefile:4: all] Error 2
 
 ```
 sudo apt install --reinstall gcc-12
-Then all you should have to do is update the link for gcc to go to the gcc-12 binary:
+Then update the link for gcc to go to the gcc-12 binary:
 sudo ln -s -f /usr/bin/gcc-12 /usr/bin/gcc
-You can set it back to 11 as well by doing the following:
+You can go back to 11 by doing the following:
 sudo ln -s -f /usr/bin/gcc-11 /usr/bin/gcc
-You can check it by running gcc --version. 
+You can check it by running:
+gcc --version. 
 ```
 
 INSMOD LOAD ERROR
