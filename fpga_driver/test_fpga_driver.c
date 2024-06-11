@@ -22,14 +22,16 @@ int main()
    }
 
    printf("Reading from FPGA over PCIe\n");
-
-   int errcode = read(fd, (char*)data_from_fpga_driver32, 32*4);
+   int numwords = 32;
+   int numbytes = 4 * numwords;
+ 
+   int errcode = read(fd, (char*)data_from_fpga_driver32, numbytes);
    if (errcode < 0) {
       perror("Error - could not read from fpga_driver");
       return errno;
    }
    
-   for (int ii=0; ii < 16; ii++) {
+   for (int ii=0; ii < numwords; ii++) {
      printf("%d ", data_from_fpga_driver32[ii]);
    }
    return 0;
