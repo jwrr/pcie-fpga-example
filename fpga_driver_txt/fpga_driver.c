@@ -305,34 +305,6 @@ static int dev_open(struct inode *inodep, struct file *filep){
 }
 
 
-// This function is called when a read is performed (usually from a user-space app)
-static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset)
-{
-  sprintf(buffer, "0x%x", fpga_rdata32[0]);
-  fpga_rdata32_size_in_bytes=0;
-  printk(KERN_INFO "fpga_device.dev_read: fpga_rdata32=0x%x, buffer='%s'", fpga_rdata32[0], buffer);
-  return 0;
-
-//   len = len / 4; // convert bytes to 32-bit words
-//   for (int ii=0; ii<len; ii++) {
-//     fpga_rdata32[ii] = ioread32(ptr_bar0+4*ii);
-//     printk(KERN_INFO "fpga_driver:dev_read: fpga[%d]=%d ", ii, fpga_rdata32[ii]);
-//   }
-//   fpga_rdata32_size_in_bytes = 4*len;
-//
-//   int error_count = 0;
-//   // copy_to_user has the format ( * to, *from, size) and returns 0 on success
-//   error_count = copy_to_user(buffer, (char*)fpga_rdata32, fpga_rdata32_size_in_bytes);
-//   if (error_count==0) { 
-//     printk(KERN_INFO "fpga_driver.dev_read: %d bytes read by user\n", fpga_rdata32_size_in_bytes);
-//     return (fpga_rdata32_size_in_bytes=0);
-//   } else {
-//     printk(KERN_ALERT "fpga_driver.dev_read: read failed\n");
-//     return -EFAULT;
-//   }
-}
-
-
 // This function is called when a write is performed (usually from a user-space app)
 static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, loff_t *offset)
 {
@@ -365,6 +337,34 @@ static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, lof
 //   fpga_rdata32_size_in_bytes = i;
 //   printk(KERN_INFO "fpga_driver.dev_write: bytes written = %d\n", fpga_rdata32_size_in_bytes);
 //   return len;
+}
+
+
+// This function is called when a read is performed (usually from a user-space app)
+static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset)
+{
+  sprintf(buffer, "0x%08x", fpga_rdata32[0]);
+  fpga_rdata32_size_in_bytes=0;
+  printk(KERN_INFO "fpga_device.dev_read: fpga_rdata32=0x%x, buffer='%s'", fpga_rdata32[0], buffer);
+  return 0;
+
+//   len = len / 4; // convert bytes to 32-bit words
+//   for (int ii=0; ii<len; ii++) {
+//     fpga_rdata32[ii] = ioread32(ptr_bar0+4*ii);
+//     printk(KERN_INFO "fpga_driver:dev_read: fpga[%d]=%d ", ii, fpga_rdata32[ii]);
+//   }
+//   fpga_rdata32_size_in_bytes = 4*len;
+//
+//   int error_count = 0;
+//   // copy_to_user has the format ( * to, *from, size) and returns 0 on success
+//   error_count = copy_to_user(buffer, (char*)fpga_rdata32, fpga_rdata32_size_in_bytes);
+//   if (error_count==0) { 
+//     printk(KERN_INFO "fpga_driver.dev_read: %d bytes read by user\n", fpga_rdata32_size_in_bytes);
+//     return (fpga_rdata32_size_in_bytes=0);
+//   } else {
+//     printk(KERN_ALERT "fpga_driver.dev_read: read failed\n");
+//     return -EFAULT;
+//   }
 }
 
 

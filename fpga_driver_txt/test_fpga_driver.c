@@ -8,10 +8,37 @@
 #include<stdio.h>
 #include<string.h>
 #include<unistd.h>
+#include <ctype.h>
 
 #define BUFSIZE 256
 static char data_from_fpga_driver[BUFSIZE];
 static uint32_t data_from_fpga_driver32[BUFSIZE];
+
+
+int numwords(const char* str)
+{
+  if (!str) return 0;
+  int cnt = 0;
+  char prev = ' ';
+  int len = strlen(str);
+  for (int i=0; i<len; i++) {
+    if (isspace(prev) && !isspace(str[i])) {
+      cnt++;
+    }
+    prev = str[i];
+  }
+  return cnt;
+}
+
+int endswith(const char* str, const char* suf)
+{
+  int str_len = strlen(str);
+  int suf_len = strlen(suf);
+  if (str_len < suf_len) return 0;
+  int suf_offset = str_len - suf_len;
+  const char* str2 = &str[suf_offset];
+  return (strcmp(str2, suf) == 0);
+}
 
 int main()
 {
@@ -22,6 +49,8 @@ int main()
     return errno;
   }
 
+  int errcnt = 0;
+  int tstcnt = 0;
   char cmdstr[BUFSIZE];
   while (fgets(cmdstr, BUFSIZE, stdin)) {
     size_t cmdstr_len = strlen(cmdstr);
@@ -49,9 +78,28 @@ int main()
         perror("Error - could not read from fpga_driver");
         return errno;
       }
-      printf("%s = %s\n", cmdstr, data_from_fpga_driver);
+      printf("%s = %s", cmdstr, data_from_fpga_driver);
+      
+      if (numwords(cmdstr) <= 2) {
+        printf("\n");
+      } else if (endswith(cmdstr, data_from_fpga_driver)) {
+        printf(" - pass\n");
+        tstcnt++;
+      } else {
+        errcnt++;
+        tstcnt++;
+        printf(" - FAIL\n");
+      }
     }
   } // while fgets
+  
+  if (errcnt>0) {
+    printf("Test FAILED. %d errors detected out of %d tests\n", errcnt, tstcnt);
+  } else if (tstcnt>0) {
+    printf("Test PASSED. No errors detected out of %d tests\n", tstcnt);
+  } else {
+    printf("Test complete\n");
+  }
   
 //    printf("Reading from FPGA over PCIe\n");
 //    int numwords = 32;
