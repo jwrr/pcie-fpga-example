@@ -8,6 +8,8 @@ which can be from the keyboard, file or pipe.
 Compile and Install Driver and App
 -----------------------------------
 
+Note: You need a signing key at ~/signing_key.x509
+
 ```
 # source compile_and_install.sh 
 make -C /lib/modules/6.5.0-35-generic/build/ M=/home/jwrr/git/pcie-fpga-example/fpga_driver_txt modules
